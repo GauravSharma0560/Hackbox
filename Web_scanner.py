@@ -1,0 +1,108 @@
+import scanner
+import requests
+import re
+import subprocess
+
+# A 'scanner' is a custom module that's correctly implemented
+
+print("")
+print("")
+print(" [1] - Change MAC adress (Root required) ")
+print(" [2] - Subdomain Crawl only ")
+print(" [3] - URL Path Crawl only ")
+print(" [4] - Spider: 3 step Crawl ")
+print(" [5] - Without Login Form ")
+print(" [6] - With Login Form ")
+print(" [7] - XSS Trial")
+print("")
+print(" Test URLS")
+print(" [.] - https://www.google.com/")
+print(" [.] - https://www.facebook.com/")
+print(" [.] - https://github.com/")
+print("")
+
+
+type_selection = input(" [+] - select the Scan type : ")
+
+
+if type_selection == '1':
+    subprocess.call("python MAC_Changer.py", shell=True)
+    subprocess.call("python vulnerability_scanner.py", shell=True)
+
+elif type_selection == '2':
+    subprocess.call("python Subdomain_crawler.py", shell=True)
+
+elif type_selection == '3':
+    subprocess.call("python URL_crawler.py", shell=True)
+
+elif type_selection == '4':
+    subprocess.call("python spider.py", shell=True)
+
+elif type_selection == '5':
+    target_url = input("Enter the Website URL : ")
+    vuln_scanner = scanner.Scanner(target_url)
+    vuln_scanner.crawl(target_url)
+
+elif type_selection == '6':
+    target_url = input("Enter the Website URL : ")
+    data_dict = {
+        "username": input("Enter Username : "),
+        "password": input("Enter the Password : "),
+        "Login": "submit"
+    }
+    response = requests.post(target_url, data=data_dict)
+    vuln_scanner = scanner.Scanner(target_url)
+    vuln_scanner.session.post(target_url, data=data_dict)
+    forms = vuln_scanner.extract_forms(target_url)
+    print(forms)
+    if forms:
+        # response = vuln_scanner.submit_form(forms[0], "example_value", target_url)
+        response = vuln_scanner.test_xss_in_form(forms[0], "example_value", target_url)
+        # print(response.content)
+        print(response)
+    
+    else:
+        print("No forms found on the page.")
+
+
+elif type_selection == '7':
+    subprocess.call("python xss.py", shell=True)
+    
+else:
+
+    print("Invalid Input")
+    exit()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# vuln_scanner = Scanner(target_url)
+
+# vuln_scanner = scanner.Scanner(target_url)
+# vuln_scanner.session.post(target_url, data=data_dict)
+
+# # vuln_scanner.crawl()
+# froms= vuln_scanner.extract_forms(target_url)
+# print(froms)
+# response = vuln_scanner.submit_form(forms[0], target_url)
+# print(response.content)
+
+
+
+
+# # Main Execution
+# target_url = input("Enter the Website URL: ")
+# username = input("Enter Username (if any, else leave blank): ")
+# password = input("Enter Password (if any, else leave blank): ")
+# data_dict = {"username": username, "password": password}
